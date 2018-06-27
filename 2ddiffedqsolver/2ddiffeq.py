@@ -39,7 +39,7 @@ def solver(x_start, x_stop, x_step, x_coef, y_start, y_stop, y_step, y_coef, fx,
     matx = np.matrix(to_be_matrix_x)
     matx2 = np.matrix(to_be_matrix_x2)
 
-    # y matrix creation hereio cheerio
+    # y matrix creation hereio cheerio  `
     to_be_matrix_y = np.zeros((y_number * y_number, y_number * y_number))
     for i in range(0, y_number * y_number):
         if i % y_number != 0:
@@ -58,18 +58,21 @@ def solver(x_start, x_stop, x_step, x_coef, y_start, y_stop, y_step, y_coef, fx,
     y_ans = np.matmul(maty.getI(), maty2.getT())
     x_ans = np.matmul(matx.getI(), matx2.getT())
     x_grid, y_grid = np.meshgrid(np.linspace(x_start, x_stop, x_number), np.linspace(y_start, y_stop, y_number))
-
-    ans = np.zeros(len(y_ans))
-    for i in range(0, len(y_ans)):
-        ans[i] = np.sqrt(y_ans[i] ** 2 + x_ans[i] ** 2)
+    y_ans_transform = np.zeros(y_number*x_number)
+    for i in range(0, y_number*x_number):
+        y_ans_transform[(i % y_number) * y_number + i // y_number] = y_ans[i]
+    ans = np.zeros(y_number * x_number)
+    for i in range(0, x_number * y_number):
+        ans[i] = np.sqrt((x_ans[i]**2) + (y_ans_transform[i]**2))
 
     triang = tri.Triangulation(x_grid.flatten(), y_grid.flatten())
 
-    cmap = plt.get_cmap("terrain")
+    cmap = plt.get_cmap("hot")
 
     plt.tricontourf(triang, ans, cmap=cmap)
 
     plt.show()
 
 
-solver(0, 5, .1, 1, 0, 5, .1, 1, lambda x: np.sin(x), lambda y: np.sin(y))
+# start, stop, step, a
+solver(0, 5, .1, 1, 0, 5, .1, -1, lambda x: 1, lambda y: 130)
